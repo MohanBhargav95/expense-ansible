@@ -1,6 +1,9 @@
 - name: configure backend server
   hosts: backend
   become: yes
+  vars:
+    mysql_root_password: ExpenseApp@1
+    login_host: mysql.devopstesting.space
   tasks:
    - name: disable default nodejf
      ansible.builtin.command: dnf module disable nodejs -y
@@ -31,6 +34,24 @@
      ansible.builtin.unarchive:
        src: /tmp/backend.zip
        dest: /app
-       remote_src: yes
-    
+       remote_src: yes  #This section will execute in remote server and not Ansible server
   
+   - name: installing the dependencies
+     ansible.builtin.command: npm install
+     args:
+       chdir: /app
+
+   - name: copying the backend service file to machine 
+     ansible.builtin.copy:
+       src: backend.service
+       dest: /etc/systemd/system/backend.service
+   
+   - name: import mysql data
+     community.mysql.mysql_db:
+       login_user: root
+       login_password: "{{ mysql_root_password }}"
+       login_host: "{{ login_host }}"
+       target: /app/schema/backend.sql
+       name: all
+       state: dump
+
