@@ -6,10 +6,10 @@
     login_host: mysql.devopstesting.space
   tasks:
   - name: install PyMySQL
-    ansibile.builtin.pip:
-       name:
-       - PyMySQL
-       executable: pip3.9
+    ansible.builtin.pip:
+      name:
+      - PyMySQL
+      executable: pip3.9
   - name: install mysql server
     ansible.builtin.package:
       name: mysql-server
